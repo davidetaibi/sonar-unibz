@@ -4,10 +4,24 @@ import org.sonar.api.SonarPlugin;
 
 import java.util.Arrays;
 import java.util.List;
+import org.sonar.api.web.*;
 
-@org.sonar.api.web.UserRole(org.sonar.api.web.UserRole.USER)
-@org.sonar.api.web.Description("This is the description of the widget")
-public class ClassComplexityWidget extends org.sonar.api.web.AbstractRubyTemplate implements org.sonar.api.web.RubyRailsWidget {
+import org.sonar.api.web.WidgetScope;
+
+@WidgetCategory({"Global","Complexity"})
+@WidgetScope(WidgetScope.GLOBAL)
+@Description("This is the description.")
+@UserRole(UserRole.USER)
+@WidgetProperties(
+{
+	@WidgetProperty(
+		key="selectedmetric",
+		description="This is a mandatory parameter",
+		type=WidgetPropertyType.METRIC,
+		optional=false
+  )
+})
+public class ClassComplexityWidget extends AbstractRubyTemplate implements RubyRailsWidget {
     public String getId() {
         return "idemetadata";
     }
