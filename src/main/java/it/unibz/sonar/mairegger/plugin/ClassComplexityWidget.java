@@ -15,7 +15,14 @@ import org.sonar.api.web.WidgetScope;
 @WidgetProperties(
 {
 	@WidgetProperty(
-		key="selectedmetric",
+		key="metric1",
+		description="This is a mandatory parameter",
+		type=WidgetPropertyType.METRIC,
+		optional=false
+  ),
+  
+	@WidgetProperty(
+		key="metric2",
 		description="This is a mandatory parameter",
 		type=WidgetPropertyType.METRIC,
 		optional=false

@@ -1,12 +1,10 @@
-<%
-metrics = [widget_properties['metric1']]
-%>
-
-
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js" charset="utf-8"></script>
-<H1><span style="color:#FF0000">This is my custom plugin</span></H1>
-<H3>The custom plugin is now loaded</H3>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+<div class="dashbox">
+
+<H1>My custom widget</H1>
+selected metric is: <%= widget_properties['selectedmetric'].description %>
+
 <style>
 
 body {
@@ -28,7 +26,6 @@ form {
   <label><input type="radio" name="mode" value="count" checked> Count</label>
 </form>
   <div id="sunburst" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
 <script>
 
 var width = 400,
@@ -44,54 +41,57 @@ var y = d3.scale.sqrt()
 var color = d3.scale.category20c();
 
 var svg = d3.select("#sunburst").append("svg")
-    .attr("width", width)
-    .attr("height", height)
-  .append("g")
-    .attr("transform", "translate(" + width / 2 + "," + (height / 2 + 10) + ")");
+								.attr("width", width)
+								.attr("height", height)
+								.append("g")
+								.attr("transform", "translate(" + width / 2 + "," + (height / 2 + 10) + ")");
 
 var partition = d3.layout.partition()
-    .sort(null)
-    .value(function(d) { return 1; });
+						 .sort(null)
+						 .value(function(d) { return 1; });
 
 var arc = d3.svg.arc()
-    .startAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x))); })
-    .endAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx))); })
-    .innerRadius(function(d) { return Math.max(0, y(d.y)); })
-    .outerRadius(function(d) { return Math.max(0, y(d.y + d.dy)); });
+				.startAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x))); })
+				.endAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx))); })
+				.innerRadius(function(d) { return Math.max(0, y(d.y)); })
+				.outerRadius(function(d) { return Math.max(0, y(d.y + d.dy)); });
 
 // Keep track of the node that is currently being displayed as the root.
 var node;
 
-root = JSON.parse('{"name": "F1","children":[{"name":"F2","children":[{"name":"F2"},{"name":"F3","children":[{"name":"F2","size":1},{"name":"F3","size":2},{"name":"F4"},{"name":"F5"},{"name":"F6"}]},{"name":"F4"},{"name":"F5"},{"name":"F6"}]},{"name":"F3"},{"name":"F4"},{"name":"F5","size":3},{"name":"F6","size":2}]}');
-  node = root;
-  
-  var path = svg.datum(root).selectAll("path")
-      .data(partition.nodes)
-    .enter().append("path")
-      .attr("d", arc)
-      .style("fill", function(d) { return color((d.children ? d : d.parent).name); })
-      .on("click", click)
-      .each(stash);
+// http://localhost:9000/api/resources?resource=sv:main&depth=1&metrics=ncloc&format=json
+d3.json("http://localhost:9000/api/resources?resource=sv:main&depth=1&metrics=ncloc&format=json", function(error, root) 
+{
+	node = root;
+	var path = svg.datum(root).selectAll("path")
+				.data(partition.nodes)
+				.enter().append("path")
+				.attr("d", arc)
+				.style("fill", function(d) { return color((d.children ? d : d.parent).name); })
+				.on("click", click)
+				.each(stash);
 
-  d3.selectAll("input").on("change", function change() {
-    var value = this.value === "count"
-        ? function() { return 1; }
-        : function(d) { return d.size; };
 
-    path
-        .data(partition.value(value).nodes)
-      .transition()
-        .duration(1000)
-        .attrTween("d", arcTweenData);
-  });
+	d3.selectAll("input").on("change", function change() 
+	{
+		var value = this.value === "count"
+			? function() { return 1; }
+			: function(d) { return d.size; };
 
-  function click(d) {
-    node = d;
-    path.transition()
-      .duration(1000)
-      .attrTween("d", arcTweenZoom(d));
-  }
+		path.data(partition.value(value).nodes)
+			.transition()
+			.duration(1000)
+			.attrTween("d", arcTweenData);
+	});
 
+	function click(d) 
+	{
+		node = d;
+		path.transition()
+			.duration(1000)
+			.attrTween("d", arcTweenZoom(d));
+	}
+});
 
 d3.select(self.frameElement).style("height", height + "px");
 
@@ -134,6 +134,7 @@ function arcTweenZoom(d) {
         : function(t) { x.domain(xd(t)); y.domain(yd(t)).range(yr(t)); return arc(d); };
   };
 }
-
-
 </script>
+
+
+<div>
