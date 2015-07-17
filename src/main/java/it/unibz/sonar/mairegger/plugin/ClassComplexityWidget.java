@@ -26,6 +26,29 @@ import org.sonar.api.web.WidgetScope;
 		description="This is a mandatory parameter",
 		type=WidgetPropertyType.METRIC,
 		optional=false
+  ),
+  @WidgetProperty(
+		key="chartType",
+		description="Select chart type",
+		type=WidgetPropertyType.SINGLE_SELECT_LIST,
+		optional=false,
+		options=
+		{
+			
+			"scatterplot",
+			"sunburst chart",
+			"chord diagram",
+			"treemap",
+			"parallel coordinates",
+			"liquid fill gauge",
+			"line chart",
+			"bar chart",
+			"stacked bar chart",
+			"normalized bar chart",
+			"piechart",
+			"timeseries",
+			"multi series chart"
+		}
   )
 })
 public class ClassComplexityWidget extends AbstractRubyTemplate implements RubyRailsWidget {
