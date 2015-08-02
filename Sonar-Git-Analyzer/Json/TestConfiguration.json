@@ -1,0 +1,8 @@
+{
+  "$schema": "json-schema1.json",
+  "Branch": "master",
+  "DropLocation": "C:\\Users\\micha\\Desktop\\MahApps-DropTest",
+  "GitHubRepository": "MahApps/MahApps.Metro",
+  "SonarRunnerPath": "E:\\SF\\sonar-runner-2.4\\bin\\sonar-runner.bat",
+  "SonarProperties": "C:\\Users\\micha\\Desktop\\MahApps-DropTest\\sonar-project.properties"
+}

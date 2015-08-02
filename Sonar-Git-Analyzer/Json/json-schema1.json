@@ -1,0 +1,30 @@
+﻿{
+  "$schema": "http://json-schema.org/draft-04/schema",
+  "title": "JSON Schema for my JSON file format",
+
+  "type": "object",
+
+  "properties": {
+    "Branch": {
+      "type": "string",
+      "description": "Specifies the branch or the sha of a commit to analyze"
+    },
+    "DropLocation": {
+      "type": "string",
+      "description": "The location where to download the source."
+    },
+    "GitHubRepository": {
+      "type": "string",
+      "description": "The name of the repository to analyze."
+    },
+    "SonarRunnerPath": {
+      "type": "string",
+      "description": "The path to the executable of \"sonar-runner\"."
+    },
+    "SonarProperties": {
+      "type": "string",
+      "description": "The path to the \"sonar-project.properties\" file."
+    }
+  },
+  "required": [ "Branch", "DropLocation", "GitHubRepository", "SonarRunnerPath", "SonarProperties" ]
+}
