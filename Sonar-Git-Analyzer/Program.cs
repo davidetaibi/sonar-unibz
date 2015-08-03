@@ -15,6 +15,7 @@ namespace Sonar_Git_Analyzer
     using Newtonsoft.Json;
     using System.Threading.Tasks;
     using System.Linq;
+    using Sonar_Git_Analyzer.Util;
 
     internal class Program
     {
@@ -69,11 +70,5 @@ namespace Sonar_Git_Analyzer
         }
 
         
-    }
-    public class ArgumentHelper
-    {
-        public bool Fetch { get; set; }
-        public bool Analyze { get; set; }
-        public string ConfigurationFile { get; set; }
     }
 }

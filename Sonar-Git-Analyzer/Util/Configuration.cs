@@ -8,7 +8,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Sonar_Git_Analyzer
+namespace Sonar_Git_Analyzer.Util
 {
     using System.Runtime.Serialization;
 

@@ -7,7 +7,7 @@
 //     All rights reserved
 // </copyright>
 // -----------------------------------------------------------------------
-namespace Sonar_Git_Analyzer
+namespace Sonar_Git_Analyzer.Util
 {
     using System.Diagnostics;
     using System.IO;
@@ -32,12 +32,5 @@ namespace Sonar_Git_Analyzer
                 process.WaitForExit();
             }
         }
-    }
-
-    [DebuggerDisplay("{Version} - {SHA}")]
-    internal class CommitHelper
-    {
-        public string SHA { get; set; }
-        public string Version { get; set; }
     }
 }

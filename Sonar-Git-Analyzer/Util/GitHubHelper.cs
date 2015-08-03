@@ -8,17 +8,16 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Sonar_Git_Analyzer
+namespace Sonar_Git_Analyzer.Util
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.IO.Compression;
+    using System.Linq;
     using System.Net.Http;
     using System.Threading.Tasks;
     using Newtonsoft.Json.Linq;
-    using Newtonsoft.Json;
-    using System.Linq;
-    using System.Collections.Generic;
 
     internal class GitHubHelper
     {
