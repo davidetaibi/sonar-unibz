@@ -1,8 +1,78 @@
 {
-  "$schema": "json-schema1.json",
   "Branch": "master",
-  "DropLocation": "C:\\Users\\micha\\Desktop\\MahApps-DropTest",
+  "DropLocation": "\\\\SRV02\\Profiles\\michael.mairegger\\Desktop\\MahApps-DropTest",
   "GitHubRepository": "MahApps/MahApps.Metro",
-  "SonarRunnerPath": "E:\\SF\\sonar-runner-2.4\\bin\\sonar-runner.bat",
-  "SonarProperties": "C:\\Users\\micha\\Desktop\\MahApps-DropTest\\sonar-project.properties"
+  "SonarRunnerPath": "I:\\SF\\sonar-runner-2.4\\bin\\sonar-runner.bat",
+  "SonarProperties": "\\\\SRV02\\Profiles\\michael.mairegger\\Desktop\\MahApps-DropTest\\sonar-project.properties",
+  "RescanFrequency": "00:00:10",
+  "AnalyzedSHAs": [
+    {
+      "SHA": "4dbe6b801ad17138bbf6cff17b2767d63791245e",
+      "Version": "1.1.2"
+    },
+    {
+      "SHA": "c4e3e43d418d1b759234d3feafbefaf8658b333c",
+      "Version": "1.1.1"
+    },
+    {
+      "SHA": "b17cf8d3c10f0daafd7096e26942ebff9a8180fe",
+      "Version": "1.1.0"
+    },
+    {
+      "SHA": "3b1582442171d0805350fe19ae4e9ce5c8b0af80",
+      "Version": "1.0.0"
+    },
+    {
+      "SHA": "732296a07f53e8de9e2b7d1407a8dc14d309364b",
+      "Version": "0.14"
+    },
+    {
+      "SHA": "275d1730ed5e8e3a7b28c722cf9c3d000054ad90",
+      "Version": "0.13.1"
+    },
+    {
+      "SHA": "d55949c9db060b45f36b098610bced49a5b4d8da",
+      "Version": "0.13"
+    },
+    {
+      "SHA": "6a8e2cf0bc302f3afc35da45ef25bef705d7aed4",
+      "Version": "0.12.1"
+    },
+    {
+      "SHA": "9dc45fe6f4ebe36a2b2d489914d1e0beb1e302a9",
+      "Version": "0.12"
+    },
+    {
+      "SHA": "722290998d6f603dd3efb356ab9fcb990b44324a",
+      "Version": "0.11"
+    },
+    {
+      "SHA": "6789239cc6128bb261604b5653c7cffc73fa6c87",
+      "Version": "0.10.1"
+    },
+    {
+      "SHA": "d91f7f0794846b3810a81102b06dcb458279e25e",
+      "Version": "0.9"
+    },
+    {
+      "SHA": "80650364f51c21331d75a59bde4a2b1b8e67ffcd",
+      "Version": "0.8"
+    },
+    {
+      "SHA": "c7d1151d262b3ee02dbecc1686d10021d6282701",
+      "Version": "0.7.1"
+    },
+    {
+      "SHA": "abda466b1ec1db29244cca10ba48b3a291e29db5",
+      "Version": "0.6"
+    },
+    {
+      "SHA": "cc361395a9a2d1f6ba28391718c38bee7086b75c",
+      "Version": "0.5"
+    },
+    {
+      "SHA": "5ffe7a2e33e8956487e76954293833127e53da85",
+      "Version": "0.4"
+    }
+  ]
 }

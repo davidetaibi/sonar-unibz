@@ -7,14 +7,24 @@
 //     All rights reserved
 // </copyright>
 // -----------------------------------------------------------------------
-
 namespace Sonar_Git_Analyzer.Util
 {
+    using System;
+    using System.Collections.Generic;
     using System.Runtime.Serialization;
 
     [DataContract]
     public class Configuration
     {
+        private List<CommitHelper> _analyzedShAs = new List<CommitHelper>();
+
+        [DataMember(IsRequired = false)]
+        public List<CommitHelper> AnalyzedSHAs
+        {
+            get { return _analyzedShAs; }
+            set { _analyzedShAs = value; }
+        }
+
         [DataMember]
         public string Branch { get; set; }
 
@@ -25,9 +35,12 @@ namespace Sonar_Git_Analyzer.Util
         public string GitHubRepository { get; set; }
 
         [DataMember]
-        public string SonarRunnerPath { get; set; }
+        public TimeSpan RescanFrequency { get; set; }
 
         [DataMember]
         public string SonarProperties { get; set; }
+
+        [DataMember]
+        public string SonarRunnerPath { get; set; }
     }
 }

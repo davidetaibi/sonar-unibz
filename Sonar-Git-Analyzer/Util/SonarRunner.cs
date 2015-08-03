@@ -9,13 +9,14 @@
 // -----------------------------------------------------------------------
 namespace Sonar_Git_Analyzer.Util
 {
+    using System;
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
 
     internal class SonarRunner
     {
-        public static void Execute(Configuration configuration, CommitHelper commitHelper)
+        public static bool Execute(Configuration configuration, CommitHelper commitHelper)
         {
             if (File.Exists(configuration.SonarRunnerPath))
             {
@@ -24,13 +25,23 @@ namespace Sonar_Git_Analyzer.Util
                 var finalDirectory = d.GetDirectories().SingleOrDefault(i => i.FullName.Contains(commitHelper.SHA));
 
                 var userName = string.Format("-D project.settings={0} -D sonar.projectBaseDir={1} -D sonar.projectVersion={2} -D sonar.sources={1}", configuration.SonarProperties, finalDirectory.FullName, commitHelper.Version);
-                var process = new Process();
-                process.StartInfo.FileName = configuration.SonarRunnerPath;
-                process.StartInfo.UseShellExecute = false;
-                process.StartInfo.Arguments = userName;
+                var process = new Process
+                              {
+                                  StartInfo =
+                                  {
+                                      FileName = configuration.SonarRunnerPath, 
+                                      UseShellExecute = false, 
+                                      Arguments = userName
+                                  }
+                              };
                 process.Start();
                 process.WaitForExit();
+                return true;
             }
+
+            Console.WriteLine("sonar-runner not found in location {0}", configuration.SonarRunnerPath);
+
+            return false;
         }
     }
 }

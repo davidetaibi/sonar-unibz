@@ -1,30 +1,55 @@
 ﻿{
-  "$schema": "http://json-schema.org/draft-04/schema",
-  "title": "JSON Schema for my JSON file format",
+    "$schema": "http://json-schema.org/draft-04/schema",
+    "title": "JSON Schema for my JSON file format",
 
-  "type": "object",
+    "type": "object",
 
-  "properties": {
-    "Branch": {
-      "type": "string",
-      "description": "Specifies the branch or the sha of a commit to analyze"
+    "properties": {
+        "Branch": {
+            "type": "string",
+            "description": "Specifies the branch or the sha of a commit to analyze"
+        },
+        "DropLocation": {
+            "type": "string",
+            "description": "The location where to download the source."
+        },
+        "GitHubRepository": {
+            "type": "string",
+            "description": "The name of the repository to analyze."
+        },
+        "SonarRunnerPath": {
+            "type": "string",
+            "description": "The path to the executable of \"sonar-runner\"."
+        },
+        "SonarProperties": {
+            "type": "string",
+            "description": "The path to the \"sonar-project.properties\" file."
+        },
+        "RescanFrequency": {
+            "type": "string",
+            "description": "TimeSpan rapresenting the frequency of the restart of the download/analyze job."
+        },
+        "AnalyzedSHAs": {
+            "type": "array",
+            "description": "Stores every commit that has been analyzed so far.",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "SHA": {
+                        "type": "string",
+                        "description": "The commit SHA."
+                    },
+                    "Version": {
+                        "type": "string",
+                        "description": "The version name of the commit."
+                    }
+                },
+                "required": [ "SHA", "Version" ],
+                "additionalProperties": false
+            },
+            "additionalItems": false
+        },
     },
-    "DropLocation": {
-      "type": "string",
-      "description": "The location where to download the source."
-    },
-    "GitHubRepository": {
-      "type": "string",
-      "description": "The name of the repository to analyze."
-    },
-    "SonarRunnerPath": {
-      "type": "string",
-      "description": "The path to the executable of \"sonar-runner\"."
-    },
-    "SonarProperties": {
-      "type": "string",
-      "description": "The path to the \"sonar-project.properties\" file."
-    }
-  },
-  "required": [ "Branch", "DropLocation", "GitHubRepository", "SonarRunnerPath", "SonarProperties" ]
+    "additionalProperties": false,
+    "required": [ "Branch", "DropLocation", "GitHubRepository", "SonarRunnerPath", "SonarProperties" ]
 }
