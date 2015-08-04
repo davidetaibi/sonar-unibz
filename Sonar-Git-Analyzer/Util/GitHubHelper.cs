@@ -7,6 +7,7 @@
 //     All rights reserved
 // </copyright>
 // -----------------------------------------------------------------------
+
 namespace Sonar_Git_Analyzer.Util
 {
     using System;
@@ -21,17 +22,23 @@ namespace Sonar_Git_Analyzer.Util
 
     internal class GitHubHelper
     {
+        private readonly Configuration _configuration;
         private Lazy<HttpClient> _httpClient;
         private bool _firstRun = true;
 
-        public async Task<bool> Download(Configuration configuration, CommitHelper applicationState)
+        public GitHubHelper(Configuration configuration)
         {
-            var client = GetLazyClient(configuration);
+            _configuration = configuration;
+        }
 
-            var destinationDirectoryName = Path.Combine(configuration.DropLocation, applicationState.SHA);
+        public async Task<bool> Download(CommitHelper applicationState)
+        {
+            var client = GetLazyClient();
+
+            var destinationDirectoryName = Path.Combine(_configuration.DropLocation, applicationState.SHA);
             if (!Directory.Exists(destinationDirectoryName))
             {
-                string zipFile = string.Format("https://github.com/{0}/archive/{1}.zip", configuration.GitHubRepository, applicationState.SHA);
+                string zipFile = string.Format("https://github.com/{0}/archive/{1}.zip", _configuration.GitHubRepository, applicationState.SHA);
 
                 var request = await client.GetAsync(zipFile);
                 request.EnsureSuccessStatusCode();
@@ -50,17 +57,17 @@ namespace Sonar_Git_Analyzer.Util
             return false;
         }
 
-        public async Task<string> Download(Configuration configuration)
+        public async Task<string> Download()
         {
             using (var client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Add("User-Agent", "Sonar-Analyzer");
-                client.BaseAddress = new Uri(string.Format("https://api.github.com/repos/{0}/", configuration.GitHubRepository));
+                client.BaseAddress = new Uri(string.Format("https://api.github.com/repos/{0}/", _configuration.GitHubRepository));
 
                 string shaKey;
-                if (!Regex.IsMatch(configuration.Branch, @"\A\b[0-9a-fA-F]+\b\Z"))
+                if (!Regex.IsMatch(_configuration.Branch, @"\A\b[0-9a-fA-F]+\b\Z"))
                 {
-                    string head = string.Format("git/refs/heads/{0}", configuration.Branch);
+                    string head = string.Format("git/refs/heads/{0}", _configuration.Branch);
                     var result = await client.GetStringAsync(head);
                     JObject obj = JObject.Parse(result);
 
@@ -68,28 +75,43 @@ namespace Sonar_Git_Analyzer.Util
                 }
                 else
                 {
-                    shaKey = configuration.Branch;
+                    shaKey = _configuration.Branch;
                 }
 
-                await Download(configuration, null);
+                await Download(null);
                 return shaKey;
             }
         }
 
-        internal async Task<IList<CommitHelper>> FetchHistory(Configuration configuration, bool fetch)
+        public async Task SetCommitDate(CommitHelper commit)
         {
-            var httpClient = GetLazyClient(configuration);
+            if (commit.CommitDateTime > DateTime.MinValue)
+            {
+                return;
+            }
+            var httpClient = GetLazyClient();
+            var commitDetail = await httpClient.GetStringAsync(commit.Url);
+            var jobject = JObject.Parse(commitDetail);
+
+            DateTime dateOfCommit = jobject["commit"]["author"]["date"].Value<DateTime>();
+            commit.CommitDateTime = dateOfCommit;
+        }
+
+        internal async Task<IList<CommitHelper>> FetchHistory(bool fetch)
+        {
+            var httpClient = GetLazyClient();
 
             var result1 = await httpClient.GetStringAsync("tags");
 
             var obj = JArray.Parse(result1);
 
             var tempList = from commit in obj.Children()
-                                        select new CommitHelper
-                                               {
-                                                   Version = commit["name"].Value<string>(),
-                                                   SHA = commit["commit"]["sha"].Value<string>()
-                                               };
+                           select new CommitHelper
+                                  {
+                                      Version = commit["name"].Value<string>(),
+                                      SHA = commit["commit"]["sha"].Value<string>(),
+                                      Url = commit["commit"]["url"].Value<string>()
+                                  };
 
             var commitList = tempList.Reverse().ToList();
 
@@ -101,7 +123,7 @@ namespace Sonar_Git_Analyzer.Util
                 {
                     commitCount++;
                     Console.Write("Downloading {0} out of {1}\r", commitCount, commitList.Count());
-                    if (await Download(configuration, commit))
+                    if (await Download(commit))
                     {
                         Console.WriteLine("{0} out of {1} commits downloaded", commitCount, commitList.Count());
                     }
@@ -113,7 +135,7 @@ namespace Sonar_Git_Analyzer.Util
             return commitList;
         }
 
-        private HttpClient GetLazyClient(Configuration configuration)
+        private HttpClient GetLazyClient()
         {
             if (_httpClient == null)
             {
@@ -121,7 +143,7 @@ namespace Sonar_Git_Analyzer.Util
                                                    {
                                                        var client = new HttpClient();
                                                        client.DefaultRequestHeaders.Add("User-Agent", "Sonar-Analyzer");
-                                                       client.BaseAddress = new Uri(string.Format("https://api.github.com/repos/{0}/", configuration.GitHubRepository));
+                                                       client.BaseAddress = new Uri(string.Format("https://api.github.com/repos/{0}/", _configuration.GitHubRepository));
 
                                                        return client;
                                                    });

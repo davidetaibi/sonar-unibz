@@ -16,13 +16,13 @@ namespace Sonar_Git_Analyzer.Util
     [DataContract]
     public class Configuration
     {
-        private List<CommitHelper> _analyzedShAs = new List<CommitHelper>();
+        private List<CommitHelper> _shAs = new List<CommitHelper>();
 
         [DataMember(IsRequired = false)]
-        public List<CommitHelper> AnalyzedSHAs
+        public List<CommitHelper> SHAs
         {
-            get { return _analyzedShAs; }
-            set { _analyzedShAs = value; }
+            get { return _shAs; }
+            set { _shAs = value; }
         }
 
         [DataMember]

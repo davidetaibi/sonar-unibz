@@ -7,6 +7,7 @@
 //     All rights reserved
 // </copyright>
 // -----------------------------------------------------------------------
+
 namespace Sonar_Git_Analyzer
 {
     using System;
@@ -19,9 +20,9 @@ namespace Sonar_Git_Analyzer
     internal class Program
     {
         private static bool _fistRun = true;
-        private static readonly GitHubHelper Github = new GitHubHelper();
+        private static GitHubHelper _github;
 
-        public static void Process(ArgumentHelper helper, Configuration configuration)
+        public static async Task Process(ArgumentHelper helper, Configuration configuration)
         {
             if (string.IsNullOrEmpty(helper.ConfigurationFile))
             {
@@ -29,7 +30,7 @@ namespace Sonar_Git_Analyzer
             }
 
             WriteFetch();
-            var result = Github.FetchHistory(configuration, helper.Fetch).Result;
+            var result = _github.FetchHistory(helper.Fetch).Result;
             int commitCount = 0;
             if (helper.Analyze)
             {
@@ -39,7 +40,8 @@ namespace Sonar_Git_Analyzer
                 {
                     commitCount++;
 
-                    if (configuration.AnalyzedSHAs.Contains(applicationState))
+                    var commit = configuration.SHAs.SingleOrDefault(i => i.SHA == applicationState.SHA);
+                    if (commit != null && commit.IsAnalyzed)
                     {
                         if (_fistRun)
                         {
@@ -49,6 +51,8 @@ namespace Sonar_Git_Analyzer
                         continue;
                     }
 
+                    await _github.SetCommitDate(applicationState);
+
                     if (!SonarRunner.Execute(configuration, applicationState))
                     {
                         return;
@@ -56,7 +60,7 @@ namespace Sonar_Git_Analyzer
 
                     Console.WriteLine("{0} out of {1} commits analyzed", commitCount, result.Count());
 
-                    configuration.AnalyzedSHAs.Add(applicationState);
+                    configuration.SHAs.Add(applicationState);
 
                     File.WriteAllText(helper.ConfigurationFile, JsonConvert.SerializeObject(configuration, Formatting.Indented));
                 }
@@ -90,19 +94,21 @@ namespace Sonar_Git_Analyzer
             var readAllText = File.ReadAllText(argHelper.ConfigurationFile);
             var configuration = JsonConvert.DeserializeObject<Configuration>(readAllText);
 
+            _github = new GitHubHelper(configuration);
+
             if (configuration.RescanFrequency > TimeSpan.Zero)
             {
                 Console.WriteLine("Rescan every {0:dd}d {0:hh} h {0:mm}m {0:ss}s", configuration.RescanFrequency);
 
                 while (true)
                 {
-                    Process(argHelper, configuration);
+                    Process(argHelper, configuration).Wait();
                     Console.WriteLine("Next rescan at {0}", DateTime.Now + configuration.RescanFrequency);
                     Task.Delay(configuration.RescanFrequency).Wait();
                 }
             }
 
-            Process(argHelper, configuration);
+            Process(argHelper, configuration).Wait();
         }
 
         private static void WriteAnalyze()

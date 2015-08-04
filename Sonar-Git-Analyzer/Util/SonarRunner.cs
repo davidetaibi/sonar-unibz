@@ -24,7 +24,17 @@ namespace Sonar_Git_Analyzer.Util
                 d = d.GetDirectories().SingleOrDefault(i => i.FullName.Contains(commitHelper.SHA));
                 var finalDirectory = d.GetDirectories().SingleOrDefault(i => i.FullName.Contains(commitHelper.SHA));
 
-                var userName = string.Format("-D project.settings={0} -D sonar.projectBaseDir={1} -D sonar.projectVersion={2} -D sonar.sources={1}", configuration.SonarProperties, finalDirectory.FullName, commitHelper.Version);
+                var userName = string.Format(
+                    "-D project.settings={0} " +
+                    "-D sonar.projectBaseDir={1} " +
+                    "-D sonar.sources={1} " +
+                    "-D sonar.projectVersion={2} " +
+                    "-D sonar.projectDate={3:yyyy-MM-dd}",
+                    configuration.SonarProperties,
+                    finalDirectory.FullName,
+                    commitHelper.Version,
+                    commitHelper.CommitDateTime);
+
                 var process = new Process
                               {
                                   StartInfo =
@@ -36,6 +46,10 @@ namespace Sonar_Git_Analyzer.Util
                               };
                 process.Start();
                 process.WaitForExit();
+
+                commitHelper.IsAnalyzed = process.ExitCode == 0;
+
+
                 return true;
             }
 
