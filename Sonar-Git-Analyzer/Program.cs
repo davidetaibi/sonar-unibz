@@ -43,7 +43,7 @@ namespace Sonar_Git_Analyzer
                     {
                         if (_fistRun)
                         {
-                            Console.WriteLine("I will skip already analyzed commit {0} with version {1}", applicationState.SHA, applicationState.Version);
+                            Console.WriteLine("Skip analyzing: {0} (v{1})\t", applicationState.SHA, applicationState.Version);
                         }
 
                         continue;

@@ -77,7 +77,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="Json\json-schema1.json" />
+    <None Include="Json\GitHub-sonar.json" />
     <None Include="Json\TestConfiguration.json" />
     <None Include="packages.config" />
   </ItemGroup>

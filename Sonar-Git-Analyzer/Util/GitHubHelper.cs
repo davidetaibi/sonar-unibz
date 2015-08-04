@@ -44,7 +44,7 @@ namespace Sonar_Git_Analyzer.Util
 
             if (_firstRun)
             {
-                Console.WriteLine("I will skip already downloaded commit {0} with version {1}", applicationState.SHA, applicationState.Version);
+                Console.WriteLine("Skip downloading: {0} (v{1})", applicationState.SHA, applicationState.Version);
             }
 
             return false;
@@ -84,30 +84,33 @@ namespace Sonar_Git_Analyzer.Util
 
             var obj = JArray.Parse(result1);
 
-            var r = (from commit in obj.Children()
-                     select new CommitHelper
-                            {
-                                Version = commit["name"].Value<string>(), 
-                                SHA = commit["commit"]["sha"].Value<string>()
-                            }).ToList();
+            var tempList = from commit in obj.Children()
+                                        select new CommitHelper
+                                               {
+                                                   Version = commit["name"].Value<string>(),
+                                                   SHA = commit["commit"]["sha"].Value<string>()
+                                               };
+
+            var commitList = tempList.Reverse().ToList();
 
             int commitCount = 0;
 
             if (fetch)
             {
-                foreach (var commit in r)
+                foreach (var commit in commitList)
                 {
                     commitCount++;
+                    Console.Write("Downloading {0} out of {1}\r", commitCount, commitList.Count());
                     if (await Download(configuration, commit))
                     {
-                        Console.WriteLine("{0} out of {1} commits downloaded", commitCount, r.Count());
+                        Console.WriteLine("{0} out of {1} commits downloaded", commitCount, commitList.Count());
                     }
                 }
 
                 _firstRun = false;
             }
 
-            return r;
+            return commitList;
         }
 
         private HttpClient GetLazyClient(Configuration configuration)
