@@ -26,9 +26,6 @@ namespace Sonar_Git_Analyzer.Util
         }
 
         [DataMember]
-        public string Branch { get; set; }
-
-        [DataMember]
         public string DropLocation { get; set; }
 
         [DataMember]

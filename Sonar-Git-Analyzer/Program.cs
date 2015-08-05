@@ -41,26 +41,32 @@ namespace Sonar_Git_Analyzer
                     commitCount++;
 
                     var commit = configuration.SHAs.SingleOrDefault(i => i.SHA == applicationState.SHA);
-                    if (commit != null && commit.IsAnalyzed)
+
+                    if (commit == null)
+                    {
+                        configuration.SHAs.Add(applicationState);
+                        commit = applicationState;
+                    }
+
+                    if (commit.IsAnalyzed)
                     {
                         if (_fistRun)
                         {
-                            Console.WriteLine("Skip analyzing: {0} (v{1})\t", applicationState.SHA, applicationState.Version);
+                            Console.WriteLine("Skip analyzing: {0} (v{1})\t", commit.SHA, commit.Version);
                         }
 
                         continue;
                     }
 
-                    await _github.SetCommitDate(applicationState);
+                    await _github.SetCommitDate(commit);
 
-                    if (!SonarRunner.Execute(configuration, applicationState))
+                    if (!SonarRunner.Execute(configuration, commit))
                     {
                         return;
                     }
 
                     Console.WriteLine("{0} out of {1} commits analyzed", commitCount, result.Count());
 
-                    configuration.SHAs.Add(applicationState);
 
                     File.WriteAllText(helper.ConfigurationFile, JsonConvert.SerializeObject(configuration, Formatting.Indented));
                 }

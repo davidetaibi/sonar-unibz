@@ -20,9 +20,19 @@ namespace Sonar_Git_Analyzer.Util
         {
             if (File.Exists(configuration.SonarRunnerPath))
             {
-                DirectoryInfo d = new DirectoryInfo(configuration.DropLocation);
-                d = d.GetDirectories().SingleOrDefault(i => i.FullName.Contains(commitHelper.SHA));
-                var finalDirectory = d.GetDirectories().SingleOrDefault(i => i.FullName.Contains(commitHelper.SHA));
+                DirectoryInfo dropDirectory = new DirectoryInfo(configuration.DropLocation);
+                dropDirectory = dropDirectory.GetDirectories().SingleOrDefault(i => i.FullName.Contains(commitHelper.SHA));
+
+                if (dropDirectory == null)
+                {
+                    return false;
+                }
+
+                var sourceDirectory = dropDirectory.GetDirectories().SingleOrDefault(i => i.FullName.Contains(commitHelper.SHA));
+                if (sourceDirectory == null)
+                {
+                    return false;
+                }
 
                 var userName = string.Format(
                     "-D project.settings={0} " +
@@ -31,7 +41,7 @@ namespace Sonar_Git_Analyzer.Util
                     "-D sonar.projectVersion={2} " +
                     "-D sonar.projectDate={3:yyyy-MM-dd}",
                     configuration.SonarProperties,
-                    finalDirectory.FullName,
+                    sourceDirectory.FullName,
                     commitHelper.Version,
                     commitHelper.CommitDateTime);
 
@@ -39,8 +49,8 @@ namespace Sonar_Git_Analyzer.Util
                               {
                                   StartInfo =
                                   {
-                                      FileName = configuration.SonarRunnerPath, 
-                                      UseShellExecute = false, 
+                                      FileName = configuration.SonarRunnerPath,
+                                      UseShellExecute = false,
                                       Arguments = userName
                                   }
                               };
@@ -48,7 +58,6 @@ namespace Sonar_Git_Analyzer.Util
                 process.WaitForExit();
 
                 commitHelper.IsAnalyzed = process.ExitCode == 0;
-
 
                 return true;
             }

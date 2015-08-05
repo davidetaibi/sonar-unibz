@@ -16,7 +16,6 @@ namespace Sonar_Git_Analyzer.Util
     using System.IO.Compression;
     using System.Linq;
     using System.Net.Http;
-    using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using Newtonsoft.Json.Linq;
 
@@ -57,31 +56,31 @@ namespace Sonar_Git_Analyzer.Util
             return false;
         }
 
-        public async Task<string> Download()
-        {
-            using (var client = new HttpClient())
-            {
-                client.DefaultRequestHeaders.Add("User-Agent", "Sonar-Analyzer");
-                client.BaseAddress = new Uri(string.Format("https://api.github.com/repos/{0}/", _configuration.GitHubRepository));
+        //public async Task<string> Download()
+        //{
+        //    using (var client = new HttpClient())
+        //    {
+        //        client.DefaultRequestHeaders.Add("User-Agent", "Sonar-Analyzer");
+        //        client.BaseAddress = new Uri(string.Format("https://api.github.com/repos/{0}/", _configuration.GitHubRepository));
 
-                string shaKey;
-                if (!Regex.IsMatch(_configuration.Branch, @"\A\b[0-9a-fA-F]+\b\Z"))
-                {
-                    string head = string.Format("git/refs/heads/{0}", _configuration.Branch);
-                    var result = await client.GetStringAsync(head);
-                    JObject obj = JObject.Parse(result);
+        //        string shaKey;
+        //        if (!Regex.IsMatch(_configuration.Branch, @"\A\b[0-9a-fA-F]+\b\Z"))
+        //        {
+        //            string head = string.Format("git/refs/heads/{0}", _configuration.Branch);
+        //            var result = await client.GetStringAsync(head);
+        //            JObject obj = JObject.Parse(result);
 
-                    shaKey = (string)obj["object"]["sha"];
-                }
-                else
-                {
-                    shaKey = _configuration.Branch;
-                }
+        //            shaKey = (string)obj["object"]["sha"];
+        //        }
+        //        else
+        //        {
+        //            shaKey = _configuration.Branch;
+        //        }
 
-                await Download(null);
-                return shaKey;
-            }
-        }
+        //        await Download(null);
+        //        return shaKey;
+        //    }
+        //}
 
         public async Task SetCommitDate(CommitHelper commit)
         {
