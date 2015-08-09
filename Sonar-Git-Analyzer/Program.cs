@@ -14,6 +14,8 @@ namespace Sonar_Git_Analyzer
     using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
+    using CommandLine;
+    using CommandLine.Text;
     using Newtonsoft.Json;
     using Sonar_Git_Analyzer.Util;
 
@@ -79,22 +81,9 @@ namespace Sonar_Git_Analyzer
         {
             ArgumentHelper argHelper = new ArgumentHelper();
 
-            foreach (var arg in args)
+            if (!Parser.Default.ParseArguments(args, argHelper))
             {
-                if (arg.Equals("-f"))
-                {
-                    argHelper.Fetch = true;
-                }
-
-                if (arg.Equals("-a"))
-                {
-                    argHelper.Analyze = true;
-                }
-
-                if (arg.StartsWith("-c:"))
-                {
-                    argHelper.ConfigurationFile = arg.Substring(3);
-                }
+                Environment.Exit(1);
             }
 
             var readAllText = File.ReadAllText(argHelper.ConfigurationFile);
