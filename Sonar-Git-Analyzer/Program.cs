@@ -15,28 +15,28 @@ namespace Sonar_Git_Analyzer
     using System.Linq;
     using System.Threading.Tasks;
     using CommandLine;
-    using CommandLine.Text;
     using Newtonsoft.Json;
+    using Octokit;
     using Sonar_Git_Analyzer.Util;
 
-    internal class Program
+    internal static class Program
     {
         private static bool _fistRun = true;
         private static GitHubHelper _github;
 
-        public static async Task Process(ArgumentHelper helper, Configuration configuration)
+        private static async Task Process(ArgumentHelper helper, Configuration configuration)
         {
             if (string.IsNullOrEmpty(helper.ConfigurationFile))
             {
                 Console.WriteLine("Configuration file missing");
             }
 
-            WriteFetch();
+            //WriteFetch();
             var result = _github.FetchHistory(helper.Fetch).Result;
             int commitCount = 0;
             if (helper.Analyze)
             {
-                WriteAnalyze();
+                //WriteAnalyze();
 
                 foreach (var applicationState in result)
                 {
@@ -89,21 +89,74 @@ namespace Sonar_Git_Analyzer
             var readAllText = File.ReadAllText(argHelper.ConfigurationFile);
             var configuration = JsonConvert.DeserializeObject<Configuration>(readAllText);
 
-            _github = new GitHubHelper(configuration);
-
+            _github = new GitHubHelper(configuration, argHelper);
             if (configuration.RescanFrequency > TimeSpan.Zero)
             {
                 Console.WriteLine("Rescan every {0:dd}d {0:hh} h {0:mm}m {0:ss}s", configuration.RescanFrequency);
 
                 while (true)
                 {
-                    Process(argHelper, configuration).Wait();
-                    Console.WriteLine("Next rescan at {0}", DateTime.Now + configuration.RescanFrequency);
-                    Task.Delay(configuration.RescanFrequency).Wait();
+                    var nextRescanTime = _github.GetNextAPIResetTime().Result;
+                    if (!nextRescanTime.HasValue)
+                    {
+                        ProcessAndHandle(argHelper, configuration).Wait();
+
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine("Next rescan at {0}", DateTime.Now + configuration.RescanFrequency);
+                        Console.ResetColor();
+                        Task.Delay(configuration.RescanFrequency).Wait();
+                    }
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.DarkRed;
+                        Console.WriteLine("Because of API-Request limitations for the current account the next scan has been rescheduled");
+
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine("Next rescan at {0}", nextRescanTime);
+                        Console.ResetColor();
+                        var timeSpan = nextRescanTime - DateTime.Now;
+                        Task.Delay(timeSpan.Value).Wait();
+                    }
                 }
             }
 
-            Process(argHelper, configuration).Wait();
+            ProcessAndHandle(argHelper, configuration).Wait();
+        }
+
+        private static async Task ProcessAndHandle(ArgumentHelper helper, Configuration configuration)
+        {
+            try
+            {
+                await Process(helper, configuration);
+            }
+            catch (Exception ex)
+            {
+                var apiError = ex.InnerException as ApiException;
+                if (apiError != null)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine(apiError.Message);
+
+                    foreach (var keyValuePair in apiError.HttpResponse.Headers.Where(i => i.Key.StartsWith("X-RateLimit")))
+                    {
+                        if (keyValuePair.Key == "X-RateLimit-Reset")
+                        {
+                            var dateTime = DateTime.Today + new TimeSpan(long.Parse(keyValuePair.Value));
+                            Console.WriteLine("{0} {1}", keyValuePair.Key, dateTime);
+                        }
+                        else
+                        {
+                            Console.WriteLine("{0} {1}", keyValuePair.Key, keyValuePair.Value);
+                        }
+                    }
+
+                    Console.ResetColor();
+                }
+                else
+                {
+                    Environment.Exit(1);
+                }
+            }
         }
 
         private static void WriteAnalyze()

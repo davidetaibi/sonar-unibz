@@ -32,6 +32,9 @@ namespace Sonar_Git_Analyzer.Util
         public string GitHubRepository { get; set; }
 
         [DataMember]
+        public string GitHubRepositoryOwner { get; set; }
+
+        [DataMember]
         public TimeSpan RescanFrequency { get; set; }
 
         [DataMember]

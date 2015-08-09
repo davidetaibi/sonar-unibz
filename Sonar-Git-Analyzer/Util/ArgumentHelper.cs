@@ -10,7 +10,6 @@
 namespace Sonar_Git_Analyzer.Util
 {
     using CommandLine;
-    using CommandLine.Text;
 
     public class ArgumentHelper
     {
@@ -24,12 +23,12 @@ namespace Sonar_Git_Analyzer.Util
         [VerbOption("fetch", HelpText = "Specify whether to download the source.")]
         public bool Fetch { get; set; }
 
-        [HelpOption]
-        public string GetUsage()
-        {
-            return HelpText.AutoBuild(this,
-              (HelpText current) => HelpText.DefaultParsingErrorsHandler(this, current));
-        }
+        [Option("user", Required = false)]
+        public string GitHubUserName { get; set; }
 
+        [Option("password", Required = false)]
+        public string Password { get; set; }
+        [Option("token", Required = false)]
+        public string Token { get; set; }
     }
 }
