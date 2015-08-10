@@ -7,6 +7,7 @@
 //     All rights reserved
 // </copyright>
 // -----------------------------------------------------------------------
+
 namespace Sonar_Git_Analyzer.Util
 {
     using System;
@@ -16,13 +17,9 @@ namespace Sonar_Git_Analyzer.Util
     [DataContract]
     public class Configuration
     {
-        private List<CommitHelper> _shAs = new List<CommitHelper>();
-
-        [DataMember(IsRequired = false)]
-        public List<CommitHelper> SHAs
+        public Configuration()
         {
-            get { return _shAs; }
-            set { _shAs = value; }
+            SHAs = new List<CommitHelper>();
         }
 
         [DataMember]
@@ -36,6 +33,9 @@ namespace Sonar_Git_Analyzer.Util
 
         [DataMember]
         public TimeSpan RescanFrequency { get; set; }
+
+        [DataMember(IsRequired = false)]
+        public List<CommitHelper> SHAs { get; set; }
 
         [DataMember]
         public string SonarProperties { get; set; }

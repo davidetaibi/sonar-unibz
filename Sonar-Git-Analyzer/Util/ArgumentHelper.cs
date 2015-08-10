@@ -7,28 +7,32 @@
 //     All rights reserved
 // </copyright>
 // -----------------------------------------------------------------------
+
 namespace Sonar_Git_Analyzer.Util
 {
     using CommandLine;
 
     public class ArgumentHelper
     {
-        
-        [VerbOption("analyze", HelpText = "Specify whether to analyze the source.")]
+        [Option("analyze", HelpText = "Analyze the downloaded source.")]
         public bool Analyze { get; set; }
+
+        [Option("anonymous", HelpText = "Anonymous authentication", SetName = "Anonymous", Required = true)]
+        public bool Anonymous { get; set; }
 
         [Option("config", HelpText = "The location of the configuration file.", Required = true)]
         public string ConfigurationFile { get; set; }
 
-        [VerbOption("fetch", HelpText = "Specify whether to download the source.")]
+        [Option("fetch", HelpText = "Download the source from GitHub.")]
         public bool Fetch { get; set; }
 
-        [Option("user", Required = false)]
+        [Option("user", HelpText = "The GitHub username", SetName = "BasicAuthentication", Required = true)]
         public string GitHubUserName { get; set; }
 
-        [Option("password", Required = false)]
+        [Option("password", HelpText = "The GitHub password", SetName = "BasicAuthentication", Required = true)]
         public string Password { get; set; }
-        [Option("token", Required = false)]
+
+        [Option("token", HelpText = "The GitHub token", SetName = "OAuth", Required = true)]
         public string Token { get; set; }
     }
 }

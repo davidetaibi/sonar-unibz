@@ -31,7 +31,10 @@ namespace Sonar_Git_Analyzer.Util
         public GitHubHelper(Configuration configuration, ArgumentHelper helper)
         {
             _configuration = configuration;
-
+            if (helper.Anonymous)
+            {
+                _client.Credentials = Credentials.Anonymous;
+            }
             if (!string.IsNullOrEmpty(helper.Token))
             {
                 _client.Credentials = new Credentials(helper.Token);
@@ -40,6 +43,7 @@ namespace Sonar_Git_Analyzer.Util
             {
                 _client.Credentials = new Credentials(helper.GitHubUserName, helper.Password);
             }
+            Console.WriteLine("Authentication Type: {0}", _client.Credentials.AuthenticationType);
         }
 
         public async Task<bool> Download(CommitHelper applicationState)

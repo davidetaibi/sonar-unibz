@@ -79,13 +79,13 @@ namespace Sonar_Git_Analyzer
 
         private static void Main(string[] args)
         {
-            ArgumentHelper argHelper = new ArgumentHelper();
+            var parser = Parser.Default.ParseArguments<ArgumentHelper>(args);
+            Environment.ExitCode = parser.Return(helper => 0, errors => 1);
+            parser.WithParsed(RunMainProgram);
+        }
 
-            if (!Parser.Default.ParseArguments(args, argHelper))
-            {
-                Environment.Exit(1);
-            }
-
+        private static void RunMainProgram(ArgumentHelper argHelper)
+        {
             var readAllText = File.ReadAllText(argHelper.ConfigurationFile);
             var configuration = JsonConvert.DeserializeObject<Configuration>(readAllText);
 
@@ -157,37 +157,6 @@ namespace Sonar_Git_Analyzer
                     Environment.Exit(1);
                 }
             }
-        }
-
-        private static void WriteAnalyze()
-        {
-            if (!_fistRun)
-            {
-                return;
-            }
-
-            Console.WriteLine();
-            Console.WriteLine("      AA       NN    NN       AA       LL       YY    YY ZZZZZZZZ EEEEEEEE");
-            Console.WriteLine("     AAAA      NNN   NN      AAAA      LL        YY  YY       ZZ  EE");
-            Console.WriteLine("    AA  AA     NNNN  NN     AA  AA     LL         YYYY       ZZ   EE");
-            Console.WriteLine("   AAAAAAAA    NN NN NN    AAAAAAAA    LL          YY       ZZ    EEEEEEEE");
-            Console.WriteLine("  AA      AA   NN  NNNN   AA      AA   LL         YY       ZZ     EE");
-            Console.WriteLine(" AA        AA  NN   NNN  AA        AA  LL        YY       ZZ      EE");
-            Console.WriteLine("AA          AA NN    NN AA          AA LLLLLLLL YY       ZZZZZZZZ EEEEEEEE");
-            Console.WriteLine();
-        }
-
-        private static void WriteFetch()
-        {
-            Console.WriteLine();
-            Console.WriteLine("FFFFFFFF EEEEEEEE TTTTTTTT    CCCCC HH    HH");
-            Console.WriteLine("FF       EE          TT      CC     HH    HH");
-            Console.WriteLine("FF       EE          TT     CC      HH    HH");
-            Console.WriteLine("FFFF     EEEEEEEE    TT    CC       HHHHHHHH");
-            Console.WriteLine("FF       EE          TT     CC      HH    HH");
-            Console.WriteLine("FF       EE          TT      CC     HH    HH");
-            Console.WriteLine("FF       EEEEEEEE    TT       CCCCC HH    HH");
-            Console.WriteLine();
         }
     }
 }
