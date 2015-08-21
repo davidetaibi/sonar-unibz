@@ -19,7 +19,7 @@ namespace Sonar_Git_Analyzer.Util
 
         public string Version { get; set; }
 
-        public DateTime CommitDateTime { get; set; }
+        public DateTimeOffset CommitDateTime { get; set; }
 
         public bool IsAnalyzed { get; set; }
 

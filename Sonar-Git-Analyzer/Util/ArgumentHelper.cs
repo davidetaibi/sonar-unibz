@@ -10,6 +10,7 @@
 
 namespace Sonar_Git_Analyzer.Util
 {
+    using System.IO;
     using CommandLine;
 
     public class ArgumentHelper
@@ -20,7 +21,7 @@ namespace Sonar_Git_Analyzer.Util
         [Option("anonymous", HelpText = "Anonymous authentication", SetName = "Anonymous", Required = true)]
         public bool Anonymous { get; set; }
 
-        [Option("config", HelpText = "The location of the configuration file.", Required = true)]
+        [Option("config", HelpText = "The location of the configuration file.", Required = false)]
         public string ConfigurationFile { get; set; }
 
         [Option("fetch", HelpText = "Download the source from GitHub.")]
@@ -34,5 +35,10 @@ namespace Sonar_Git_Analyzer.Util
 
         [Option("token", HelpText = "The GitHub token", SetName = "OAuth", Required = true)]
         public string Token { get; set; }
+
+        [Option("sonar-runner")]
+        public FileInfo SonarRunnerPath { get; set; }
+        
+
     }
 }

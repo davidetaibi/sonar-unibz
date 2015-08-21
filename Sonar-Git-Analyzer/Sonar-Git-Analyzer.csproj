@@ -75,8 +75,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ProgramHelper.cs" />
+    <Compile Include="Util\AnalyzationBehavior.cs" />
     <Compile Include="Util\ArgumentHelper.cs" />
     <Compile Include="Util\CommitHelper.cs" />
+    <Compile Include="Util\CommitOnlyAnalyzer.cs" />
     <Compile Include="Util\Configuration.cs" />
     <Compile Include="Util\GitHubHelper.cs" />
     <Compile Include="Program.cs" />
@@ -85,7 +88,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="Json\GitHub-sonar.json" />
+    <None Include="Json\GitHubSonar.schema.json" />
     <None Include="Json\TestConfiguration.json" />
     <None Include="packages.config" />
   </ItemGroup>

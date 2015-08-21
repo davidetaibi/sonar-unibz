@@ -46,17 +46,25 @@ namespace Sonar_Git_Analyzer.Util
             Console.WriteLine("Authentication Type: {0}", _client.Credentials.AuthenticationType);
         }
 
-        public async Task<bool> Download(CommitHelper applicationState)
+        private async Task<bool> Download(CommitHelper applicationState)
         {
+            var dropLocation = new DirectoryInfo(_configuration.DropLocation);
+            if (!dropLocation.Exists)
+            {
+                dropLocation.Create();
+            }
             var destinationDirectoryName = Path.Combine(_configuration.DropLocation, applicationState.SHA);
             if (!Directory.Exists(destinationDirectoryName))
             {
-                string zipFile = string.Format("https://github.com/{0}/archive/{1}.zip", _configuration.GitHubRepository, applicationState.SHA);
+                dropLocation.CreateSubdirectory(applicationState.SHA);
+                string zipFile = string.Format("https://github.com/{0}/{1}/archive/{2}.zip", _configuration.GitHubRepositoryOwner, _configuration.GitHubRepository, applicationState.SHA);
 
                 var request = await GetLazyClient().GetAsync(zipFile);
                 request.EnsureSuccessStatusCode();
 
                 ZipArchive zip = new ZipArchive(await request.Content.ReadAsStreamAsync());
+                
+
                 zip.ExtractToDirectory(destinationDirectoryName);
 
                 return true;
@@ -70,55 +78,58 @@ namespace Sonar_Git_Analyzer.Util
             return false;
         }
 
-        //public async Task<string> Download()
-        //{
-        //    using (var client = new HttpClient())
-        //    {
-        //        client.DefaultRequestHeaders.Add("User-Agent", "Sonar-Analyzer");
-        //        client.BaseAddress = new Uri(string.Format("https://api.github.com/repos/{0}/", _configuration.GitHubRepository));
-
-        //        string shaKey;
-        //        if (!Regex.IsMatch(_configuration.Branch, @"\A\b[0-9a-fA-F]+\b\Z"))
-        //        {
-        //            string head = string.Format("git/refs/heads/{0}", _configuration.Branch);
-        //            var result = await client.GetStringAsync(head);
-        //            JObject obj = JObject.Parse(result);
-
-        //            shaKey = (string)obj["object"]["sha"];
-        //        }
-        //        else
-        //        {
-        //            shaKey = _configuration.Branch;
-        //        }
-
-        //        await Download(null);
-        //        return shaKey;
-        //    }
-        //}
-
         public async Task SetCommitDate(CommitHelper commit)
         {
-            if (commit.CommitDateTime > DateTime.MinValue)
+            if (commit.CommitDateTime == DateTimeOffset.MinValue)
             {
-                return;
+                var commitDetail = await _client.Repository.Commits.Get(_configuration.GitHubRepositoryOwner, _configuration.GitHubRepository, commit.SHA);
+                commit.CommitDateTime = commitDetail.Commit.Author.Date.Date;
             }
-            var commitDetail = await _client.Repository.Commits.Get(_configuration.GitHubRepositoryOwner, _configuration.GitHubRepository, commit.SHA);
-            commit.CommitDateTime = commitDetail.Commit.Author.Date.Date;
         }
 
         internal async Task<IList<CommitHelper>> FetchHistory(bool fetch)
         {
-            var result1 = await _client.Repository.GetAllTags(_configuration.GitHubRepositoryOwner, _configuration.GitHubRepository);
-
-            //var obj = JArray.Parse(result1);
-
-            var tempList = from commit in result1
+            IEnumerable<CommitHelper> tempList;
+            if (_configuration.CommitAnalyzer == null)
+            {
+                var result = await _client.Repository.GetAllTags(_configuration.GitHubRepositoryOwner, _configuration.GitHubRepository);
+                tempList = from commit in result
                            select new CommitHelper
-                                  {
-                                      Version = commit.Name,
-                                      SHA = commit.Commit.Sha,
-                                      Url = commit.Commit.Url
-                                  };
+                           {
+                               Version = commit.Name,
+                               SHA = commit.Commit.Sha,
+                               Url = commit.Commit.Url
+                           };
+            }
+            else
+            {
+                var commitRequest = new CommitRequest
+                        {
+                            Since = _configuration.CommitAnalyzer.LastCommitDate
+                        };
+
+                var result = await _client.Repository.Commits.GetAll(_configuration.GitHubRepositoryOwner, _configuration.GitHubRepository, commitRequest);
+
+                if ((_configuration.CommitAnalyzer.LastCommitDate == DateTimeOffset.MinValue && _configuration.CommitAnalyzer.AnalyzationBehavior == AnalyzationBehavior.FirstAllThenNewest) || 
+                    _configuration.CommitAnalyzer.AnalyzationBehavior == AnalyzationBehavior.All)
+                {
+                }
+                else if(_configuration.CommitAnalyzer.AnalyzationBehavior == AnalyzationBehavior.Newest || _configuration.CommitAnalyzer.AnalyzationBehavior == AnalyzationBehavior.FirstAllThenNewest)
+                {
+                    result = result.Take(1).ToList();
+                }
+
+                _configuration.CommitAnalyzer.LastCommitDate = DateTime.Now;
+
+                tempList = from commit in result
+                           select new CommitHelper
+                           {
+                               Version = "0.0",
+                               SHA = commit.Sha,
+                               Url = commit.Url,
+                               CommitDateTime = commit.Commit.Author.Date
+                           };
+            }
 
             var commitList = tempList.Reverse().ToList();
 
@@ -163,7 +174,7 @@ namespace Sonar_Git_Analyzer.Util
         /// Returs the next time the API-Search rate is reset, or null when the amount of remaining request is not zero.
         /// </summary>
         /// <returns></returns>
-        public async Task<DateTime?> GetNextAPIResetTime()
+        public async Task<DateTime?> GetNextApiResetTime()
         {
             Console.Write("Loading API LIMITS");
             Console.ForegroundColor = ConsoleColor.DarkYellow;

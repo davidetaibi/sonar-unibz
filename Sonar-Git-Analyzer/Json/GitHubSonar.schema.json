@@ -1,0 +1,71 @@
+﻿{
+  "$schema": "http://json-schema.org/draft-04/schema",
+  "title": "JSON Schema for my JSON file format",
+
+  "type": "object",
+
+  "properties": {
+    "Branch": {
+      "type": "string",
+      "description": "Specifies the branch or the sha of a commit to analyze"
+    },
+    "DropLocation": {
+      "type": "string",
+      "description": "The location where to download the source."
+    },
+    "GitHubRepository": {
+      "type": "string",
+      "description": "The name of the repository to analyze."
+    },
+    "GitHubRepositoryOwner": {
+      "type": "string",
+      "description": "The owner of the repository."
+    },
+    "SonarRunnerPath": {
+      "type": "string",
+      "description": "The path to the executable of \"sonar-runner\"."
+    },
+    "SonarProperties": {
+      "type": "string",
+      "description": "The path to the \"sonar-project.properties\" file."
+    },
+    "RescanFrequency": {
+      "type": "string",
+      "description": "TimeSpan rapresenting the frequency of the restart of the download/analyze job."
+    },
+    "SHAs": {
+      "type": "array",
+      "description": "Stores every commit that has been analyzed so far.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "SHA": {
+            "type": "string",
+            "description": "The commit SHA."
+          },
+          "Version": {
+            "type": "string",
+            "description": "The version name of the commit."
+          },
+          "CommitDateTime": {
+            "type": "string",
+            "description": "The date when this commit was created"
+          },
+          "IsAnalyzed": {
+            "type": "boolean",
+            "description": "Specifies whether this commit was already analyzed by sonar-runner"
+          },
+          "Url": {
+            "type": "string",
+            "description": "The url to the zip file on GitHub"
+          }
+        },
+        "required": [ "SHA", "Version" ],
+        "additionalProperties": false
+      },
+      "additionalItems": false
+    }
+  },
+  "additionalProperties": false,
+  "required": [ "Branch", "DropLocation", "GitHubRepository", "GitHubRepositoryOwner", "SonarRunnerPath", "SonarProperties" ]
+}
