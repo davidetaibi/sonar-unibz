@@ -79,12 +79,6 @@ namespace Sonar_Git_Analyzer
 
                     var commit = _configuration.SHAs.SingleOrDefault(i => i.SHA == applicationState.SHA);
 
-                    if (commit == null)
-                    {
-                        _configuration.SHAs.Add(applicationState);
-                        commit = applicationState;
-                    }
-
                     if (commit.IsAnalyzed)
                     {
                         if (_fistRun)
@@ -103,7 +97,7 @@ namespace Sonar_Git_Analyzer
                     }
                     
                     Console.WriteLine("{0} out of {1} commits analyzed", commitCount, result.Count());
-                    File.WriteAllText(_configuration.InstanceConfigurationFile, JsonConvert.SerializeObject(_configuration, Formatting.Indented));
+                    _configuration.Save();
                 }
 
                 _fistRun = false;

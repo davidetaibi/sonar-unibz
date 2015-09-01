@@ -48,16 +48,33 @@ namespace Sonar_Git_Analyzer.Util
 
         private async Task<bool> Download(CommitHelper applicationState)
         {
+            var temp = _configuration.SHAs.SingleOrDefault(i => i.SHA == applicationState.SHA);
+            if (temp == null)
+            {
+                _configuration.SHAs.Add(applicationState);
+                temp = applicationState;
+            }
+            if (temp.IsAnalyzed)
+            {
+                return true;
+            }
+
             var dropLocation = new DirectoryInfo(_configuration.DropLocation);
             if (!dropLocation.Exists)
             {
                 dropLocation.Create();
             }
-            var destinationDirectoryName = Path.Combine(_configuration.DropLocation, applicationState.SHA);
+            var destinationDirectoryName = Path.Combine(_configuration.DropLocation, temp.SHA);
+
+            if (Directory.Exists(destinationDirectoryName))
+            {
+                Directory.Delete(destinationDirectoryName, true);
+            }
+
             if (!Directory.Exists(destinationDirectoryName))
             {
-                dropLocation.CreateSubdirectory(applicationState.SHA);
-                string zipFile = string.Format("https://github.com/{0}/{1}/archive/{2}.zip", _configuration.GitHubRepositoryOwner, _configuration.GitHubRepository, applicationState.SHA);
+                dropLocation.CreateSubdirectory(temp.SHA);
+                string zipFile = string.Format("https://github.com/{0}/{1}/archive/{2}.zip", _configuration.GitHubRepositoryOwner, _configuration.GitHubRepository, temp.SHA);
 
                 var request = await GetLazyClient().GetAsync(zipFile);
                 request.EnsureSuccessStatusCode();
@@ -67,12 +84,16 @@ namespace Sonar_Git_Analyzer.Util
 
                 zip.ExtractToDirectory(destinationDirectoryName);
 
+                temp.IsAnalyzed = true;
+
+                _configuration.Save();
+
                 return true;
             }
 
             if (_firstRun)
             {
-                Console.WriteLine("Skip downloading: {0} (v{1})", applicationState.SHA, applicationState.Version);
+                Console.WriteLine("Skip downloading: {0} (v{1})", temp.SHA, temp.Version);
             }
 
             return false;

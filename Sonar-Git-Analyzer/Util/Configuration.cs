@@ -14,6 +14,7 @@ namespace Sonar_Git_Analyzer.Util
     using System.Collections.Generic;
     using System.IO;
     using System.Runtime.Serialization;
+    using Newtonsoft.Json;
 
     [DataContract]
     public class Configuration
@@ -46,7 +47,7 @@ namespace Sonar_Git_Analyzer.Util
 
         [IgnoreDataMember]
         public string InstanceConfigurationFile { get; set; }
-
+        
         public bool Validate()
         {
             string errorMessage = string.Empty;
@@ -82,6 +83,12 @@ namespace Sonar_Git_Analyzer.Util
             Console.WriteLine(errorMessage);
             Console.ResetColor();
             return false;
+        }
+
+        public void Save()
+        {
+
+            File.WriteAllText(InstanceConfigurationFile, JsonConvert.SerializeObject(this, Formatting.Indented));
         }
     }
 }
