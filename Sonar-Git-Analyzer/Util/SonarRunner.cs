@@ -66,7 +66,7 @@ namespace Sonar_Git_Analyzer.Util
 
                 commitHelper.IsAnalyzed = process.ExitCode == 0;
 
-                return true;
+                return commitHelper.IsAnalyzed;
             }
 
             Console.WriteLine("sonar-runner not found in location {0}", _sonarRunnerPath.Value);

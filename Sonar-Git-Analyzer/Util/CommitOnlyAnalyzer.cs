@@ -1,15 +1,16 @@
 namespace Sonar_Git_Analyzer.Util
 {
     using System;
-    using System.Runtime.Serialization;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Converters;
 
-    [DataContract]
+    [JsonObject]
     public class CommitOnlyAnalyzer
     {
-        [DataMember]
+        [JsonProperty]
         public DateTimeOffset LastCommitDate { get; set; }
 
-        [DataMember]
+        [JsonConverter(typeof(StringEnumConverter))]
         public AnalyzationBehavior AnalyzationBehavior { get; set; }
     }
 }

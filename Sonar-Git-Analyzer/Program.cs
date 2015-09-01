@@ -16,6 +16,7 @@ namespace Sonar_Git_Analyzer
     using System.Threading.Tasks;
     using CommandLine;
     using Newtonsoft.Json;
+    using Newtonsoft.Json.Converters;
     using Sonar_Git_Analyzer.Util;
 
     internal static class Program
@@ -39,17 +40,18 @@ namespace Sonar_Git_Analyzer
                 //TODO: Validate content of json.
             }
 
-            return enumerable.Select(i =>
+            return enumerable.Select(fileName =>
             {
-                var readAllText = File.ReadAllText(i);
+                var readAllText = File.ReadAllText(fileName);
                 try
                 {
                     var deserializeObject = JsonConvert.DeserializeObject<Configuration>(readAllText);
+                    deserializeObject.InstanceConfigurationFile = fileName;
                     return deserializeObject;
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Error in reading configuration file {0}\n\n{1}", i, ex.Message);
+                    Console.WriteLine("Error in reading configuration file {0}\n\n{1}", fileName, ex.Message);
                     return null;
                 }
             }).Where(i => i != null && i.Validate()).ToList();

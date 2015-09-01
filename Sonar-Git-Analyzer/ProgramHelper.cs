@@ -69,11 +69,6 @@ namespace Sonar_Git_Analyzer
 
         private async Task DoWork()
         {
-            if (string.IsNullOrEmpty(_argHelper.ConfigurationFile))
-            {
-                Console.WriteLine("Configuration file missing");
-            }
-
             var result = _github.FetchHistory(_argHelper.Fetch).Result;
             int commitCount = 0;
             if (_argHelper.Analyze)
@@ -108,7 +103,7 @@ namespace Sonar_Git_Analyzer
                     }
                     
                     Console.WriteLine("{0} out of {1} commits analyzed", commitCount, result.Count());
-                    File.WriteAllText(_argHelper.ConfigurationFile, JsonConvert.SerializeObject(_configuration, Formatting.Indented));
+                    File.WriteAllText(_configuration.InstanceConfigurationFile, JsonConvert.SerializeObject(_configuration, Formatting.Indented));
                 }
 
                 _fistRun = false;

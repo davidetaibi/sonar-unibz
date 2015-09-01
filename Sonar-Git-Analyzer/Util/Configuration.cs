@@ -35,7 +35,7 @@ namespace Sonar_Git_Analyzer.Util
         [DataMember]
         public TimeSpan RescanFrequency { get; set; }
 
-        [DataMember(IsRequired = false)]
+        [DataMember(IsRequired = false, Order = 100)]
         public List<CommitHelper> SHAs { get; set; }
 
         [DataMember]
