@@ -7,6 +7,7 @@
 //     All rights reserved
 // </copyright>
 // -----------------------------------------------------------------------
+
 namespace Sonar_Git_Analyzer
 {
     using System;
@@ -16,23 +17,25 @@ namespace Sonar_Git_Analyzer
     using System.Threading.Tasks;
     using CommandLine;
     using Newtonsoft.Json;
-    using Newtonsoft.Json.Converters;
     using Sonar_Git_Analyzer.Util;
 
     internal static class Program
     {
         /// <summary>
-        /// Finds Sonar-Analyzer-Configuration files in the current directory.
+        ///     Finds Sonar-Analyzer-Configuration files in the current directory.
         /// </summary>
         /// <returns></returns>
         private static IList<Configuration> FindConfigurationFiles(ArgumentHelper arg)
         {
             IEnumerable<string> enumerable = new List<string>();
-            var currentDirectory = new DirectoryInfo(Path.GetFullPath("config"));
+
+            var currentDirectory = new DirectoryInfo(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config"));
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("Searching configuration files: {0}", currentDirectory);
 
             if (!string.IsNullOrEmpty(arg.ConfigurationFile))
             {
-                enumerable = new List<string> {arg.ConfigurationFile};
+                enumerable = new List<string> { arg.ConfigurationFile };
             }
             else if (currentDirectory.Exists)
             {
@@ -40,23 +43,27 @@ namespace Sonar_Git_Analyzer
                 //TODO: Validate content of json.
             }
 
-            return enumerable.Select(fileName =>
-            {
-                var readAllText = File.ReadAllText(fileName);
-                try
-                {
-                    var deserializeObject = JsonConvert.DeserializeObject<Configuration>(readAllText);
-                    deserializeObject.InstanceConfigurationFile = fileName;
-                    return deserializeObject;
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Error in reading configuration file {0}\n\n{1}", fileName, ex.Message);
-                    return null;
-                }
-            }).Where(i => i != null && i.Validate()).ToList();
+            var configurationFiles = enumerable.Select(fileName =>
+                                                       {
+                                                           var readAllText = File.ReadAllText(fileName);
+                                                           try
+                                                           {
+                                                               var deserializeObject = JsonConvert.DeserializeObject<Configuration>(readAllText);
+                                                               deserializeObject.InstanceConfigurationFile = fileName;
 
+                                                               Console.WriteLine("Configuartion file found: {0}", fileName);
+                                                               return deserializeObject;
+                                                           }
+                                                           catch (Exception ex)
+                                                           {
+                                                               Console.WriteLine("Error in reading configuration file {0}\n\n{1}", fileName, ex.Message);
+                                                               return null;
+                                                           }
+                                                       }).Where(i => i != null && i.Validate()).ToList();
 
+            Console.ResetColor();
+
+            return configurationFiles;
         }
 
         private static void Main(string[] args)
@@ -75,8 +82,9 @@ namespace Sonar_Git_Analyzer
                                   {
                                       programHelper = foundConfigurationFiles.Select(i => new ProgramHelper(helper, i)).ToList();
                                   }
-
                               });
+
+            parser.WithNotParsed(helper => { Console.WriteLine(helper); });
 
             if (parser.Tag == ParserResultType.Parsed && programHelper != null)
             {

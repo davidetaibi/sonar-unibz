@@ -13,53 +13,73 @@ namespace Sonar_Git_Analyzer.Util
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using System.Runtime.Serialization;
     using Newtonsoft.Json;
+    using Newtonsoft.Json.Converters;
 
-    [DataContract]
+    [JsonObject]
     public class Configuration
     {
+        private string _sonarProperties;
+
         public Configuration()
         {
-            SHAs = new List<CommitHelper>();
+            CommitList = new List<CommitHelper>();
         }
 
-        [DataMember]
-        public string DropLocation { get; set; }
+        [JsonConverter(typeof(StringEnumConverter))]
+        public AnalyzationBehavior AnalyzationBehavior { get; set; }
 
-        [DataMember]
+        [JsonProperty(Order = 100)]
+        public List<CommitHelper> CommitList { get; set; }
+
+        [JsonIgnore]
+        public string DropLocation
+        {
+            get { return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "drop"); }
+        }
+
+        [JsonProperty]
         public string GitHubRepository { get; set; }
 
-        [DataMember]
+        [JsonProperty]
         public string GitHubRepositoryOwner { get; set; }
 
-        [DataMember]
+        [JsonIgnore]
+        public string InstanceConfigurationFile { get; set; }
+
+        [JsonProperty]
+        public DateTimeOffset LastSuccessfulAnalyzedCommit { get; set; }
+
+        [JsonProperty]
         public TimeSpan RescanFrequency { get; set; }
 
-        [DataMember(IsRequired = false, Order = 100)]
-        public List<CommitHelper> SHAs { get; set; }
+        [JsonProperty]
+        public string SonarProperties
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(_sonarProperties))
+                {
+                    FileInfo fi = new FileInfo(InstanceConfigurationFile);
+                    var index = fi.FullName.LastIndexOf(".json", StringComparison.InvariantCulture);
+                    if (index > 0)
+                    {
+                        _sonarProperties = fi.FullName.Remove(index) + ".properties";
+                    }
+                }
+                return _sonarProperties;
+            }
+            set { _sonarProperties = value; }
+        }
 
-        [DataMember]
-        public string SonarProperties { get; set; }
+        public void Save()
+        {
+            File.WriteAllText(InstanceConfigurationFile, JsonConvert.SerializeObject(this, Formatting.Indented));
+        }
 
-        [DataMember]
-        public CommitOnlyAnalyzer CommitAnalyzer { get; set; }
-
-        [IgnoreDataMember]
-        public string InstanceConfigurationFile { get; set; }
-        
         public bool Validate()
         {
             string errorMessage = string.Empty;
-
-            try
-            {
-                new FileInfo(DropLocation);
-            }
-            catch (Exception ex)
-            {
-                errorMessage += string.Format("ERROR {0}: DropLocation invalid\n\n{1}", InstanceConfigurationFile, ex.Message);
-            }
 
             try
             {
@@ -79,16 +99,10 @@ namespace Sonar_Git_Analyzer.Util
             {
                 return true;
             }
-            Console.BackgroundColor = ConsoleColor.DarkRed;
+            Console.BackgroundColor = ConsoleColor.Red;
             Console.WriteLine(errorMessage);
             Console.ResetColor();
             return false;
-        }
-
-        public void Save()
-        {
-
-            File.WriteAllText(InstanceConfigurationFile, JsonConvert.SerializeObject(this, Formatting.Indented));
         }
     }
 }

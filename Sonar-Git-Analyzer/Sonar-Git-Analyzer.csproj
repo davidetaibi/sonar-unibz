@@ -79,7 +79,6 @@
     <Compile Include="Util\AnalyzationBehavior.cs" />
     <Compile Include="Util\ArgumentHelper.cs" />
     <Compile Include="Util\CommitHelper.cs" />
-    <Compile Include="Util\CommitOnlyAnalyzer.cs" />
     <Compile Include="Util\Configuration.cs" />
     <Compile Include="Util\GitHubHelper.cs" />
     <Compile Include="Program.cs" />

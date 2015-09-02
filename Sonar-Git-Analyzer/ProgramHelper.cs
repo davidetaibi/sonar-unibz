@@ -11,19 +11,17 @@
 namespace Sonar_Git_Analyzer
 {
     using System;
-    using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
-    using Newtonsoft.Json;
     using Octokit;
     using Sonar_Git_Analyzer.Util;
 
     internal class ProgramHelper
     {
-        private bool _fistRun = true;
-        private GitHubHelper _github;
         private readonly ArgumentHelper _argHelper;
         private readonly Configuration _configuration;
+        private bool _fistRun = true;
+        private GitHubHelper _github;
 
         public ProgramHelper(ArgumentHelper argHelper, Configuration customConfigurationFile)
         {
@@ -52,7 +50,7 @@ namespace Sonar_Git_Analyzer
                     }
                     else
                     {
-                        Console.ForegroundColor = ConsoleColor.DarkRed;
+                        Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine("Because of API-Request limitations for the current account the next scan has been rescheduled");
 
                         Console.ForegroundColor = ConsoleColor.Green;
@@ -73,11 +71,19 @@ namespace Sonar_Git_Analyzer
             int commitCount = 0;
             if (_argHelper.Analyze)
             {
-                foreach (var applicationState in result)
-                {
-                    commitCount++;
+                var task = result.Where(i => i.CommitDateTime == DateTimeOffset.MinValue).ToList().Select(c =>
+                                                                                                          {
+                                                                                                              var commit = _configuration.CommitList.Single(i => i.SHA == c.SHA);
 
-                    var commit = _configuration.SHAs.SingleOrDefault(i => i.SHA == applicationState.SHA);
+                                                                                                              return _github.SetCommitDate(commit).ContinueWith(t => { c.CommitDateTime = commit.CommitDateTime; });
+                                                                                                          });
+
+                await Task.WhenAll(task);
+
+                foreach (var applicationState in result.OrderBy(i => i.CommitDateTime))
+                {
+                    var commit = _configuration.CommitList.Single(i => i.SHA == applicationState.SHA);
+                    commitCount++;
 
                     if (commit.IsAnalyzed)
                     {
@@ -89,15 +95,11 @@ namespace Sonar_Git_Analyzer
                         continue;
                     }
 
-                    await _github.SetCommitDate(commit);
-
-                    if (!SonarRunner.Instance.Execute(_configuration, commit))
+                    if (SonarRunner.Instance.Execute(_configuration, commit))
                     {
-                        return;
+                        Console.WriteLine("{0} out of {1} commits analyzed", commitCount, result.Count());
+                        _configuration.Save();
                     }
-                    
-                    Console.WriteLine("{0} out of {1} commits analyzed", commitCount, result.Count());
-                    _configuration.Save();
                 }
 
                 _fistRun = false;
@@ -109,7 +111,6 @@ namespace Sonar_Git_Analyzer
             try
             {
                 await DoWork();
-                //await DoWork();
             }
             catch (Exception ex)
             {
@@ -136,6 +137,10 @@ namespace Sonar_Git_Analyzer
                 }
                 else
                 {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("FATAL ERROR");
+                    Console.WriteLine(ex.Message);
+                    Console.WriteLine(ex.ToString());
                     Environment.Exit(1);
                 }
             }
