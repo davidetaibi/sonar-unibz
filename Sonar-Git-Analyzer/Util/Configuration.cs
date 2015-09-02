@@ -27,7 +27,7 @@ namespace Sonar_Git_Analyzer.Util
         }
 
         [JsonConverter(typeof(StringEnumConverter))]
-        public AnalyzationBehavior AnalyzationBehavior { get; set; }
+        public AnalysationBehavior AnalysationBehavior { get; set; }
 
         [JsonProperty(Order = 100)]
         public List<CommitHelper> CommitList { get; set; }

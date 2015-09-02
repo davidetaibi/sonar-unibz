@@ -10,7 +10,7 @@
 
 namespace Sonar_Git_Analyzer.Util
 {
-    public enum AnalyzationBehavior
+    public enum AnalysationBehavior
     {
         Tags,
         All,

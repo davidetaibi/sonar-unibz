@@ -76,7 +76,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ProgramHelper.cs" />
-    <Compile Include="Util\AnalyzationBehavior.cs" />
+    <Compile Include="Util\AnalysationBehavior.cs" />
     <Compile Include="Util\ArgumentHelper.cs" />
     <Compile Include="Util\CommitHelper.cs" />
     <Compile Include="Util\Configuration.cs" />

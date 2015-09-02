@@ -92,7 +92,7 @@ namespace Sonar_Git_Analyzer.Util
         internal async Task<IList<CommitHelper>> FetchHistory(bool fetch)
         {
             IEnumerable<CommitHelper> tempList;
-            if (_configuration.AnalyzationBehavior == AnalyzationBehavior.Tags)
+            if (_configuration.AnalysationBehavior == AnalysationBehavior.Tags)
             {
                 var result = await _client.Repository.GetAllTags(_configuration.GitHubRepositoryOwner, _configuration.GitHubRepository);
                 tempList = from commit in result
@@ -112,11 +112,11 @@ namespace Sonar_Git_Analyzer.Util
 
                 var result = await _client.Repository.Commits.GetAll(_configuration.GitHubRepositoryOwner, _configuration.GitHubRepository, commitRequest);
 
-                if ((_configuration.LastSuccessfulAnalyzedCommit == DateTimeOffset.MinValue && _configuration.AnalyzationBehavior == AnalyzationBehavior.FirstAllThenNewest) ||
-                    _configuration.AnalyzationBehavior == AnalyzationBehavior.All)
+                if ((_configuration.LastSuccessfulAnalyzedCommit == DateTimeOffset.MinValue && _configuration.AnalysationBehavior == AnalysationBehavior.FirstAllThenNewest) ||
+                    _configuration.AnalysationBehavior == AnalysationBehavior.All)
                 {
                 }
-                else if (_configuration.AnalyzationBehavior == AnalyzationBehavior.Newest || _configuration.AnalyzationBehavior == AnalyzationBehavior.FirstAllThenNewest)
+                else if (_configuration.AnalysationBehavior == AnalysationBehavior.Newest || _configuration.AnalysationBehavior == AnalysationBehavior.FirstAllThenNewest)
                 {
                     result = result.Take(1).ToList();
                 }
