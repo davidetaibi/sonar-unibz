@@ -44,6 +44,9 @@ namespace Sonar_Git_Analyzer.Util
         [JsonProperty]
         public string GitHubRepositoryOwner { get; set; }
 
+        /// <summary>
+        /// Helper property to set at application time the path to this configuration file.
+        /// </summary>
         [JsonIgnore]
         public string InstanceConfigurationFile { get; set; }
 
