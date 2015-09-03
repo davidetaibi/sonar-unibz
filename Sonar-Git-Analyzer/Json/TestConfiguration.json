@@ -3,7 +3,5 @@
   "GitHubRepository": "parkbz",
   "GitHubRepositoryOwner": "tis-innovation-park",
   "RescanFrequency": "1.00:00:00",
-  "CommitAnalyzer": {
-    "AnalyzationBehavior": "Newest"
-  }
+  "AnalyzationBehavior": "Newest"
 }

@@ -15,17 +15,14 @@ namespace Sonar_Git_Analyzer.Util
 
     public class ArgumentHelper
     {
-        [Option("analyze", HelpText = "Analyze the downloaded source.")]
-        public bool Analyze { get; set; }
+        [Option("analyse", HelpText = "Analyze the downloaded source.")]
+        public bool Analyse { get; set; }
 
         [Option("anonymous", HelpText = "Anonymous authentication", SetName = "Anonymous", Required = true)]
         public bool Anonymous { get; set; }
 
         [Option("config", HelpText = "The location of the configuration file.", Required = false)]
         public string ConfigurationFile { get; set; }
-
-        [Option("fetch", HelpText = "Download the source from GitHub.")]
-        public bool Fetch { get; set; }
 
         [Option("user", HelpText = "The GitHub username", SetName = "BasicAuthentication", Required = true)]
         public string GitHubUserName { get; set; }

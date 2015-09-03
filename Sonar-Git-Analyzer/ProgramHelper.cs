@@ -69,7 +69,7 @@ namespace Sonar_Git_Analyzer
         {
             var result = _github.FetchHistory(_argHelper.Fetch).Result;
             int commitCount = 0;
-            if (_argHelper.Analyze)
+            if (_argHelper.Analyse)
             {
                 var task = result.Where(i => i.CommitDateTime == DateTimeOffset.MinValue).ToList().Select(c =>
                                                                                                           {
