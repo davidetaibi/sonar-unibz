@@ -26,41 +26,41 @@ import org.sonar.api.web.WidgetScope;
 		description="This is a mandatory parameter",
 		type=WidgetPropertyType.METRIC,
 		optional=false
-  ),
-  @WidgetProperty(
-		key="chartType",
-		description="Select chart type",
-		type=WidgetPropertyType.SINGLE_SELECT_LIST,
-		optional=false,
-		options=
-		{
-			
-			"scatterplot",
-			"sunburst chart",
-			"chord diagram",
-			"treemap",
-			"parallel coordinates",
-			"liquid fill gauge",
-			"line chart",
-			"bar chart",
-			"stacked bar chart",
-			"normalized bar chart",
-			"piechart",
-			"timeseries",
-			"multi series chart"
-		}
-  )
+  )//,
+//  @WidgetProperty(
+//		key="chartType",
+//		description="Select chart type",
+//		type=WidgetPropertyType.SINGLE_SELECT_LIST,
+//		optional=false,
+//		options=
+//		{
+//			
+//			"scatterplot",
+//			"sunburst chart",
+//			"chord diagram",
+//			"treemap",
+//			"parallel coordinates",
+//			"liquid fill gauge",
+//			"line chart",
+//			"bar chart",
+//			"stacked bar chart",
+//			"normalized bar chart",
+//			"piechart",
+//			"timeseries",
+//			"multi series chart"
+//		}
+//  )
 })
 public class ClassComplexityWidget extends AbstractRubyTemplate implements RubyRailsWidget {
     public String getId() {
-        return "idemetadata";
+        return "scatterplot";
     }
     public String getTitle() {
-        return "Mairegger Test";
+        return "Scatter plot";
     }
     protected String getTemplatePath() {
         // uncomment next line for change reloading during development
-        return "C:/Users/Michael/Documents/git/sonar-unibz/src/main/resources/Complexity.html.erb";
-        //return "/xxxxx/sonar/idemetadata/idemetadata_widget.html.erb";
+        //return "C:/Users/Michael/Documents/git/sonar-unibz/src/main/resources/Complexity.html.erb";
+        return "/Complexity.html.erb";
     }
 }
