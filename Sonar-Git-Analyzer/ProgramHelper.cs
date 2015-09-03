@@ -67,7 +67,7 @@ namespace Sonar_Git_Analyzer
 
         private async Task DoWork()
         {
-            var result = _github.FetchHistory(_argHelper.Fetch).Result;
+            var result = _github.FetchHistory().Result;
             int commitCount = 0;
             if (_argHelper.Analyse)
             {

@@ -89,7 +89,7 @@ namespace Sonar_Git_Analyzer.Util
             }
         }
 
-        internal async Task<IList<CommitHelper>> FetchHistory(bool fetch)
+        internal async Task<IList<CommitHelper>> FetchHistory()
         {
             IEnumerable<CommitHelper> tempList;
             if (_configuration.AnalysationBehavior == AnalysationBehavior.Tags)
@@ -137,18 +137,15 @@ namespace Sonar_Git_Analyzer.Util
 
             int commitCount = 0;
 
-            if (fetch)
+            foreach (var commit in commitList)
             {
-                foreach (var commit in commitList)
-                {
-                    commitCount++;
-                    Console.Write("\rDownloading {0} out of {1}", commitCount, commitList.Count());
-                    await Download(commit);
-                }
-                Console.WriteLine("\rDownloading {0} out of {1} completed.", commitCount, commitList.Count());
-
-                _firstRun = false;
+                commitCount++;
+                Console.Write("\rDownloading {0} out of {1}", commitCount, commitList.Count());
+                await Download(commit);
             }
+            Console.WriteLine("\rDownloading {0} out of {1} completed.", commitCount, commitList.Count());
+
+            _firstRun = false;
 
             return commitList;
         }
