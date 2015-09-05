@@ -1,0 +1,68 @@
+﻿{
+    "$schema": "http://json-schema.org/draft-04/schema",
+    "title": "JSON Schema for my JSON file format",
+    "type": "object",
+
+    "properties": {
+        "GitHubRepository": {
+            "type": "string",
+            "description": "The name of the repository to analyze."
+        },
+        "GitHubRepositoryOwner": {
+            "type": "string",
+            "description": "The owner of the repository."
+        },
+        "SonarProperties": {
+            "type": "string",
+            "description": "The path to the \"sonar-project.properties\" file."
+        },
+        "RescanFrequency": {
+            "type": "string",
+            "description": "TimeSpan rapresenting the frequency of the restart of the download/analyze job."
+        },
+        "AnalysationBehavior": {
+            "type": "string",
+            "description": "Analysation type",
+            "enum": [ "Tags", "All", "Newest", "FirstAllThenNewest" ]
+        },
+        "LastSuccessfulAnalyzedCommit": {
+            "type": "string",
+            "description": "Defines the last successful analysed commit"
+        },
+
+        "SHAs": {
+            "type": "array",
+            "description": "Stores every commit that has been analyzed so far.",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "SHA": {
+                        "type": "string",
+                        "description": "The commit SHA."
+                    },
+                    "Version": {
+                        "type": "string",
+                        "description": "The version name of the commit."
+                    },
+                    "CommitDateTime": {
+                        "type": "string",
+                        "description": "The date when this commit was created"
+                    },
+                    "IsAnalyzed": {
+                        "type": "boolean",
+                        "description": "Specifies whether this commit was already analyzed by sonar-runner"
+                    },
+                    "Url": {
+                        "type": "string",
+                        "description": "The url to the zip file on GitHub"
+                    }
+                },
+                "required": [ "SHA", "Version" ],
+                "additionalProperties": false
+            },
+            "additionalItems": false
+        }
+    },
+    "additionalProperties": false,
+    "required": [ "GitHubRepository", "GitHubRepositoryOwner", "AnalysationBehavior", "RescanFrequency" ]
+}
