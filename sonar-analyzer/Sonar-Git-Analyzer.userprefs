@@ -1,0 +1,21 @@
+﻿<Properties StartupItem="Sonar-Git-Analyzer\Sonar-Git-Analyzer.csproj">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Sonar-Git-Analyzer\Util\SonarRunner.cs">
+    <Files>
+      <File FileName="Sonar-Git-Analyzer\Json\GitHubSonar.schema.json" Line="1" Column="1" />
+      <File FileName="Sonar-Git-Analyzer\Properties\AssemblyInfo.cs" Line="1" Column="1" />
+      <File FileName="Sonar-Git-Analyzer\Program.cs" Line="1" Column="1" />
+      <File FileName="Sonar-Git-Analyzer\ProgramHelper.cs" Line="1" Column="1" />
+      <File FileName="Sonar-Git-Analyzer\Util\AnalysationBehavior.cs" Line="1" Column="1" />
+      <File FileName="Sonar-Git-Analyzer\Util\ArgumentHelper.cs" Line="1" Column="1" />
+      <File FileName="Sonar-Git-Analyzer\Util\CommitHelper.cs" Line="1" Column="1" />
+      <File FileName="Sonar-Git-Analyzer\Util\Configuration.cs" Line="1" Column="1" />
+      <File FileName="Sonar-Git-Analyzer\Util\GitHubHelper.cs" Line="1" Column="1" />
+      <File FileName="Sonar-Git-Analyzer\Util\SonarRunner.cs" Line="1" Column="1" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>
