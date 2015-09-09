@@ -15,21 +15,42 @@ namespace Sonar_Git_Analyzer.Util
     using System.IO;
     using System.IO.Compression;
     using System.Linq;
+    using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
     using Newtonsoft.Json.Linq;
     using Octokit;
+    using Octokit.Internal;
 
     internal class GitHubHelper
     {
         private const string SoanarAnalyzer = "Sonar-Analyzer";
         private readonly Configuration _configuration;
-        private readonly GitHubClient _client = new GitHubClient(new ProductHeaderValue(SoanarAnalyzer));
+        private readonly GitHubClient _client;
         private Lazy<HttpClient> _httpClient;
         private bool _firstRun = true;
+        private HttpClientHandler httpClientHandler = new HttpClientHandler();
 
         public GitHubHelper(Configuration configuration, ArgumentHelper helper)
         {
+            if (!string.IsNullOrEmpty(helper.Proxy))
+            {
+                Console.WriteLine("Use Proxy {0}", helper.Proxy);
+                httpClientHandler = new HttpClientHandler
+                {
+                    Proxy = new WebProxy(helper.Proxy, false),
+                    UseProxy = true
+                };
+                var httpClientAdapter = new HttpClientAdapter(() => httpClientHandler);
+                _client = new GitHubClient(new Connection(new ProductHeaderValue(SoanarAnalyzer), httpClientAdapter));
+            }
+            else
+            {
+                _client = new GitHubClient(new ProductHeaderValue(SoanarAnalyzer));
+            }
+
+
+
             _configuration = configuration;
             if (helper.Anonymous)
             {
@@ -214,7 +235,7 @@ namespace Sonar_Git_Analyzer.Util
             {
                 _httpClient = new Lazy<HttpClient>(() =>
                                                    {
-                                                       var client = new HttpClient();
+                                                       var client = new HttpClient(httpClientHandler);
                                                        client.DefaultRequestHeaders.Add("User-Agent", SoanarAnalyzer);
                                                        client.BaseAddress = new Uri(string.Format("https://api.github.com/repos/{0}/", _configuration.GitHubRepository));
 

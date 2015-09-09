@@ -30,10 +30,13 @@ namespace Sonar_Git_Analyzer.Util
         [Option("password", HelpText = "The GitHub password", SetName = "BasicAuthentication", Required = true)]
         public string Password { get; set; }
 
-		[Option("sonar-runner", HelpText = "Path to the sonar-runner executable file", Required = false)]
+        [Option("sonar-runner", HelpText = "Path to the sonar-runner executable file", Required = false)]
         public FileInfo SonarRunnerPath { get; set; }
 
         [Option("token", HelpText = "The GitHub token", SetName = "OAuth", Required = true)]
         public string Token { get; set; }
+
+        [Option("proxy", HelpText = "Connect through a proxy server", Required = false)]
+        public string Proxy { get; set; }
     }
 }
