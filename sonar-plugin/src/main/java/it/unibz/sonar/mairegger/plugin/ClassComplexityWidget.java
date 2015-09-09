@@ -10,7 +10,7 @@ import org.sonar.api.web.WidgetScope;
 
 @WidgetCategory({"Global","Complexity"})
 @WidgetScope(WidgetScope.GLOBAL)
-@Description("This is the description.")
+@Description("This plugin provides a scatterplot of two selected metrics.")
 @UserRole(UserRole.USER)
 @WidgetProperties(
 {
@@ -60,7 +60,7 @@ public class ClassComplexityWidget extends AbstractRubyTemplate implements RubyR
     }
     protected String getTemplatePath() {
         // uncomment next line for change reloading during development
-        //return "C:/Users/Michael/Documents/git/sonar-unibz/src/main/resources/Complexity.html.erb";
+        //return "path to erb file for developing reasons.";
         return "/Complexity.html.erb";
     }
 }

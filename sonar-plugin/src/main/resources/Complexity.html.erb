@@ -2,8 +2,6 @@
 selected metric is: <%= widget_properties['metric1'].description %><br>
 selected metric is: <%= widget_properties['metric2'].description %><br>
 
-<!DOCTYPE html>
-<html>
 <meta charset="utf-8">
 
 <!-- Example based on http://bl.ocks.org/mbostock/3887118 -->
@@ -44,7 +42,7 @@ var measure1 = "<%= widget_properties['metric1'].description %>";
 var measure2 = "<%= widget_properties['metric2'].description %>";
 	
 // load data
-d3.json("http://localhost:9000/api/resources?resource=<%= @project.key%>&depth=-1&scopes=DIR&metrics=<%= widget_properties['metric1'].key%>,<%= widget_properties['metric2'].key%>&format=json", function(error, data) {
+d3.json("/api/resources?resource=<%= @project.key%>&depth=-1&scopes=DIR&metrics=<%= widget_properties['metric1'].key%>,<%= widget_properties['metric2'].key%>&format=json", function(error, data) {
 
   // change string (from CSV) into number format
   data.forEach(function(d) {
@@ -174,4 +172,3 @@ var tooltip = d3.select("body").append("div")
 </script>
 
 </body>
-</html>
