@@ -1,14 +1,4 @@
-﻿// -----------------------------------------------------------------------
-// <copyright file="AssemblyInfo.cs"
-//           project="Sonar-Git-Analyzer"
-//           company="Mairegger Michael"
-//           webpage="http://michaelmairegger.wordpress.com">
-//     Copyright © Mairegger Michael, 2015 
-//     All rights reserved
-// </copyright>
-// -----------------------------------------------------------------------
-
-using System.Reflection;
+﻿using System.Reflection;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following 
